@@ -218,11 +218,6 @@ void solve() {
     Vector2d r1 = Rotation2Dd(c.a->getAngle()).toRotationMatrix() * (c.anchoringPointA);
     Vector2d r2 = Rotation2Dd(c.b->getAngle()).toRotationMatrix() * (c.anchoringPointB);
 
-    a.setCenter(Vector2d(q(0), q(1)));
-    a.setAngle(q(2));
-    b.setCenter(Vector2d(q(3), q(4)));
-    b.setAngle(q(5));
-
     drawArrow(a.getCenter(), a.getCenter() + r1);
     drawArrow(b.getCenter(), b.getCenter() + r2);
 
