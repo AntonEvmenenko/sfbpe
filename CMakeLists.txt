@@ -16,5 +16,7 @@ add_executable(ngn
     src/drawing.cpp
     src/solver.h
     src/solver.cpp
+    src/pgs.h
+    src/pgs.cpp
 )
 target_link_libraries(ngn ${SDL2_LIBRARIES})

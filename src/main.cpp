@@ -20,7 +20,7 @@ using Eigen::Rotation2Dd;
 SDL_Window *win = NULL;
 SDL_Renderer *ren = NULL;
 
-bool init() {
+bool initSDL() {
     bool ok = true;
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -41,7 +41,7 @@ bool init() {
     return ok;
 }
 
-void quit() {
+void quitSDL() {
     SDL_DestroyWindow(win);
     win = NULL;
 
@@ -51,14 +51,12 @@ void quit() {
     SDL_Quit;
 }
 
-VectorXd F_c;
-
 vector<Box> bodies;
 vector<Constraint> constraints;
 
 int main (int arhc, char ** argv) {
-    if (!init()) {
-        quit();
+    if (!initSDL()) {
+        quitSDL();
         system("pause");
         return 1;
     }
@@ -79,9 +77,6 @@ int main (int arhc, char ** argv) {
     constraints.push_back(Constraint(addressof(bodies[4]), addressof(bodies[5]), Vector2d(0.05, 0), Vector2d(-0.05, 0)));
     constraints.push_back(Constraint(addressof(bodies[5]), addressof(bodies[6]), Vector2d(0.05, 0), Vector2d(-0.05, 0)));
     constraints.push_back(Constraint(addressof(bodies[6]), addressof(bodies[7]), Vector2d(0.05, 0), Vector2d(-0.05, 0)));
-
-    F_c = VectorXd(bodies.size() * 3);
-    F_c.setZero();
 
     Vector2d F_m;
     Box *selectedBox = nullptr;
@@ -116,9 +111,11 @@ int main (int arhc, char ** argv) {
 
                 leftMouseButtonPressed = true;
             } else {
-                Vector2d pullPointGlobal = selectedBox->getCenter() + Rotation2Dd(selectedBox->getAngle()).toRotationMatrix() * pullPointLocal;
-                F_m = csi(Vector2d(x, y)) - pullPointGlobal;
-                selectedBox->applyForce(F_m, pullPointLocal);
+                if (selectedBox) {
+                    Vector2d pullPointGlobal = selectedBox->getCenter() + Rotation2Dd(selectedBox->getAngle()).toRotationMatrix() * pullPointLocal;
+                    F_m = csi(Vector2d(x, y)) - pullPointGlobal;
+                    selectedBox->applyForce(F_m, pullPointLocal);
+                }
             }
         } else {
             F_m = Vector2d(0, 0);
@@ -150,6 +147,6 @@ int main (int arhc, char ** argv) {
         SDL_Delay(10);
     }
 
-    quit();
+    quitSDL();
     return 0;
 }

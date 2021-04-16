@@ -20,5 +20,6 @@ Vector2d csi(Vector2d v);
 void drawLine(Vector2d a, Vector2d b);
 void draw(Box &box, bool selected = false);
 void drawArrow(Vector2d a, Vector2d b);
+void drawPoint(Vector2d a);
 
 #endif // DRAWING_H

@@ -56,3 +56,19 @@ void drawArrow(Vector2d a, Vector2d b) {
 
     SDL_SetRenderDrawColor(ren, currentColor.r, currentColor.g, currentColor.b, currentColor.a);
 }
+
+void drawPoint(Vector2d a) {
+    SDL_Color currentColor;
+    SDL_GetRenderDrawColor(ren, &(currentColor.r), &(currentColor.g), &(currentColor.b), &(currentColor.a));
+    SDL_SetRenderDrawColor(ren, 0xFF, 0x00, 0x00, 0xFF);
+
+    int r = 1;
+
+    for (int i = -r; i <= r; ++i) {
+        for (int j = -r; j <= r; ++j) {
+            SDL_RenderDrawPoint(ren, cs(a)(0) + i, cs(a)(1) + j);
+        }
+    }
+
+    SDL_SetRenderDrawColor(ren, currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+}

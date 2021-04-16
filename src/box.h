@@ -14,67 +14,52 @@ public:
     Box() {}
 
     Box(Vector2d center, double width, double height, double m, double I) {
-        this->center = center;
-        this->width = width;
-        this->height = height;
-        this->m = m;
-        this->I = I;
+        m_q.segment(0, 2) = center;
+        m_width = width;
+        m_height = height;
+        m_m = m;
+        m_I = I;
     }
 
     void applyForce(Vector2d F, Vector2d F_p = Vector2d(0, 0)) {
-        this->F = F;
-        T_f = cross((Rotation2Dd(angle).toRotationMatrix() * F_p), F);
+        m_F = F;
+        m_T_f = cross((Rotation2Dd(m_q(2)).toRotationMatrix() * F_p), F);
     }
 
-    void applyTorque(double T) {this->T = T;}
+    void applyTorque(double T) {m_T = T;}
 
-    Vector2d getCenter() {return center;}
-    Vector2d setCenter(Vector2d center) {this->center = center;}
+    Vector2d getCenter() {return m_q.segment(0, 2);}
+    Vector2d setCenter(Vector2d center) {m_q.segment(0, 2) = center;}
 
-    double getWidth() {return width;}
-    double getHeight() {return height;}
+    double getAngle() {return m_q(2);}
+    double setAngle(double angle) {m_q(2) = angle;}
 
-    double getAngle() {return angle;}
-    double setAngle(double angle) {this->angle = angle;}
-
-    Vector3d getM() {return Vector3d(m, m, I);}
-
-    Vector3d getF() {return Vector3d(F(0), F(1), T + T_f);}
+    double getWidth() {return m_width;}
+    double getHeight() {return m_height;}
 
     bool contains(Vector2d p) {
-        Vector2d temp = Rotation2Dd(-angle).toRotationMatrix() * (p - center);
-        return temp.x() >= -width / 2  && temp.x() <= width / 2 &&
-               temp.y() >= -height / 2 && temp.y() <= height / 2;
+        Vector2d temp = Rotation2Dd(-m_q(2)).toRotationMatrix() * (p - m_q.segment(0, 2));
+        return temp.x() >= -m_width / 2  && temp.x() <= m_width / 2 &&
+               temp.y() >= -m_height / 2 && temp.y() <= m_height / 2;
     }
 
-    Vector3d getQ() {
-        return Vector3d(center.x(), center.y(), angle);
-    }
-    
-    void setQ(Vector3d q) {
-        center = Vector2d(q(0), q(1));
-        angle = q(2);
-    }
+    Vector3d& q() {return m_q;}
+    Vector3d& q_d() {return m_q_d;}
+    Vector3d& q_dd() {return m_q_dd;}
 
-    void setQd(Vector3d q_d) {this->q_d = q_d;}
-    Vector3d getQd() {return q_d;}
-
-    void setQdd(Vector3d q_dd) {this->q_dd = q_dd;}
-    Vector3d getQdd() {return q_dd;}
-
-    Vector3d& a() {return q_d;}
-
-    Vector3d q_d, q_dd;
+    Vector3d M() {return Vector3d(m_m, m_m, m_I);}
+    Vector3d F() {return Vector3d(m_F(0), m_F(1), m_T + m_T_f);}
 
 private:
-    Vector2d center;
-    double width, height;
-    double angle;
-    double m;
-    double I;
+    // q = {x, y, angle}
+    Vector3d m_q, m_q_d, m_q_dd;
 
-    Vector2d F;
-    double T, T_f;
+    double m_width, m_height;
+    double m_m;
+    double m_I;
+
+    Vector2d m_F;
+    double m_T, m_T_f;
 };
 
 #endif // BOX_H
